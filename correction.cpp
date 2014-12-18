@@ -80,3 +80,75 @@ void swirl(Mat img, Mat& dst, Mat& swirl_data) {
     dst.create(img.size(), img.type());
     remap(img, dst, swirl_data, Mat(), INTER_NEAREST, BORDER_CONSTANT);
 }
+
+cv::Mat interpolationMean(cv::Mat img0)
+{
+	int i,j;
+	double minValA, maxValA;
+	cv::Mat img;
+	img=img0.clone();
+	minMaxLoc( img.col(2), &minValA, &maxValA, NULL, NULL, cv::Mat() );
+	double s;
+	int k,l,cpt;
+	for(i=0;i<img.rows-2;i++)
+		{
+			for(j=0;j<img.cols-2;j++)
+			{
+				if(img.at<double>(i,j) <= (2*maxValA/255.0))
+				{
+					cpt = 1;
+					s = 0;
+					for(k=i;k<i+3;++k)
+					{
+						for(l=j;l<j+3;++l)
+						{
+							if(img.at<double>(k,l) >= (2*maxValA/255.0)) 
+							{
+								s = s + img.at<double>(k,l);
+								cpt = cpt + 1;
+							}
+						}
+					}
+					img.at<double>(i,j) = s/cpt;
+				}
+			}
+		}
+	return img;
+}
+
+
+cv::Mat interpolationMedian(cv::Mat img0)
+{
+	int i,j;
+	cv::Mat img;
+	img=img0.clone();
+	double minValA, maxValA;
+	minMaxLoc( img.col(2), &minValA, &maxValA, NULL, NULL, cv::Mat() );
+	std::vector<double> v;
+	int k,l,cpt;
+	for(i=0;i<img.rows-2;i++)
+		{
+			for(j=0;j<img.cols-2;j++)
+			{
+				if(img.at<double>(i,j) <= (2*maxValA/255.0))
+				{
+					cpt = 1;
+					v.clear();
+					for(k=i;k<i+3;++k)
+					{
+						for(l=j;l<j+3;++l)
+						{
+							if(img.at<double>(k,l) >= (2*maxValA/255.0)) 
+							{
+								v.push_back(img.at<double>(k,l));
+							}
+						}
+					}
+					std::sort(v.begin(), v.end());
+					if(v.size()!=0)
+						img.at<double>(i,j) = v.at(v.size()/2);
+				}
+			}
+		}
+	return img;
+}
