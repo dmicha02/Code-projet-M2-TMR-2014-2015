@@ -11,5 +11,7 @@ using namespace cv;
 
 Mat interpolationMean(Mat);
 Mat interpolationMedian(Mat);
+Mat interpolationBilinear(Mat);
+
 #endif	/* CORRECTION_H */
 
