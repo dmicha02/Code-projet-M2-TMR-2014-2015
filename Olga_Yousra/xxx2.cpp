@@ -1,4 +1,8 @@
-#include <xxx.h>
+#include <xxx2.h>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+using namespace cv;
 
 // Our warp matrix looks like this one:
 //
@@ -23,7 +27,7 @@ void init_warp(cv::Mat W, float wz, float tx, float ty)
 
 }
 
-void warp_image(IplImage* pSrcFrame, IplImage* pDstFrame, cv::Mat W)
+void warp_image(cv::Mat pSrcFrame, cv::Mat pDstFrame, cv::Mat W)
 {
 	pDstFrame=0;
 
@@ -31,9 +35,9 @@ void warp_image(IplImage* pSrcFrame, IplImage* pDstFrame, cv::Mat W)
 	cv::Mat Z = cv::Mat::zeros(3,1, CV_32F);
 	int x, y;
 
-	for(x=0;x<pSrcFrame->width; x++)
+	for(x=0;x<pSrcFrame.rows; x++)
 	{
-		for(y=0;y<pSrcFrame->height; y++)
+		for(y=0;y<pSrcFrame.cols; y++)
 		{
 			SET_VECTOR(X, x, y);
 
@@ -42,18 +46,21 @@ void warp_image(IplImage* pSrcFrame, IplImage* pDstFrame, cv::Mat W)
 			int x2, y2;
 			GET_INT_VECTOR(Z, x2, y2);
 
-			if(x2>=0 && x2<pDstFrame->width &&
-				y2>=0 && y2<pDstFrame->height)
+			if(x2>=0 && x2<pDstFrame.rows &&
+				y2>=0 && y2<pDstFrame.cols)
 			{
-				CV_IMAGE_ELEM(pDstFrame, uchar, y2, x2) = CV_IMAGE_ELEM(pSrcFrame,uchar, y, x);
+				//CV_IMAGE_ELEM(pDstFrame, uchar, y2, x2) = CV_IMAGE_ELEM(pSrcFrame,uchar, y, x);
+				pDstFrame.at<float>(y2,x2)=pDstFrame.at<float>(y,x);
 			}
 		}
 	}
 
 	//cvSmooth(pDstFrame, pDstFrame);
+	blur( pDstFrame, pDstFrame, Size( 3, 3 ) );
 
-	//cvReleaseMat(&X);
-	//cvReleaseMat(&Z);
+	X.release();
+	Z.release();
+
 }
 void draw_warped_rect(cv::Mat pImage, cv::Rect rect, cv::Mat W)
 {
@@ -85,12 +92,18 @@ void draw_warped_rect(cv::Mat pImage, cv::Rect rect, cv::Mat W)
 	GET_INT_VECTOR(Z, rb.x, rb.y);
 
 	// draw rectangle
-	cvLine(&pImage, lt, rt, cvScalar(255));
-	cvLine(&pImage, rt, rb, cvScalar(255));
-	cvLine(&pImage, rb, lb, cvScalar(255));
-	cvLine(&pImage, lb, lt, cvScalar(255));
+	//cvLine(&pImage, lt, rt, cvScalar(255));
+	//cvLine(&pImage, rt, rb, cvScalar(255));
+	//cvLine(&pImage, rb, lb, cvScalar(255));
+	//cvLine(&pImage, lb, lt, cvScalar(255));
+	// draw rectangle
+	line(pImage, lt, rt, 255, 1, 8);
+	line(pImage, rt, rb, 255, 1, 8);
+	line(pImage, rb, lb, 255, 1, 8);
+	line(pImage, lb, lt, 255, 1, 8);
 
 	// release resources and exit
-	//cvReleaseMat(&X);
-	//cvReleaseMat(&Z);
+	X.release();
+	Z.release();
+	
 }

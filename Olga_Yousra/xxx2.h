@@ -1,16 +1,16 @@
 //
 
-#ifndef XXX_H
-#define XXX_H
+#ifndef XXX2_H
+#define XXX2_H
 #include <cv.h>
 
 void init_warp(cv::Mat W, float wz, float tx, float ty);
-void warp_image(IplImage* pSrcFrame, IplImage* pDstFrame, cv::Mat W);
+void warp_image(cv::Mat pSrcFrame, cv::Mat pDstFrame, cv::Mat W);
 void draw_warped_rect(cv::Mat pImage, cv::Rect rect, cv::Mat W);
 
 
 template <class T>
-float interpolate(IplImage *pImage, float x, float y)
+float interpolate2(cv::Mat pImage, float x, float y)
 {
 	// Get the nearest integer pixel coords (xi;yi).
 	int xi = cvFloor(x);
@@ -19,11 +19,12 @@ float interpolate(IplImage *pImage, float x, float y)
 	float k1 = x-xi; // Coefficients for interpolation formula.
 	float k2 = y-yi;
 
-	int f1 = xi<pImage->width-1;  // Check that pixels to the right  
-	int f2 = yi<pImage->height-1; // and to down direction exist.
+	int f1 = xi<pImage.rows-1;  // Check that pixels to the right  
+	int f2 = yi<pImage.cols-1; // and to down direction exist.
 
-	T* row1 = &CV_IMAGE_ELEM(pImage, T, yi, xi);
-	T* row2 = &CV_IMAGE_ELEM(pImage, T, yi+1, xi);
+
+	T *row1 = &pImage.at<T>(yi,xi);
+	T *row2 = &pImage.at<T>(yi,xi+1);
 				
 	// Interpolate pixel intensity.
 	float interpolated_value = (1.0f-k1)*(1.0f-k2)*(float)row1[0] +
@@ -33,9 +34,7 @@ float interpolate(IplImage *pImage, float x, float y)
 
 
 	return interpolated_value;
-
 }
-//#define CV_IMAGE_ELEM(image,elemtype,row,col)(((elemtype*)((image)->imageData + (image)->withStep*(row)))[(col)])
 
 #define SET_VECTOR(X, u, v)\
 	X.at<float>(0,0) = (float)(u);\
@@ -60,4 +59,4 @@ float interpolate(IplImage *pImage, float x, float y)
 	//(v) = (int)CV_MAT_ELEM((X), float, 1, 0);
 
 	
-#endif	/* XXX_H */
+#endif	/* XXX2_H */
