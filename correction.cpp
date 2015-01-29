@@ -7,8 +7,8 @@ using namespace std;
 /**
  * \fn Mat interpolationMean(Mat img0)
  * \brief function to interpolate image with the mean value of neighborhood
- * \param img0 - the original image CV_8U or CV_32F
- * \return cv::Mat - the interpolate image
+ * \param img0 - the original CV_32F
+ * \return Mat - the interpolate image
  */
 Mat interpolationMean(Mat img0)
 {
@@ -47,34 +47,6 @@ Mat interpolationMean(Mat img0)
 			}
 		return img;
 	}
-	else if(img_type == 0) // if image type is integer
-	{
-		minMaxLoc( img.col(2), &minValA, &maxValA);
-		for(i=0;i<img.rows-2;i++)
-			{
-				for(j=0;j<img.cols-2;j++)
-				{
-					if(img.at<uchar>(i,j) <= (2*maxValA/255.0))
-					{
-						cpt = 1;
-						s = 0;
-						for(k=i;k<i+3;++k)
-						{
-							for(l=j;l<j+3;++l)
-							{
-								if(img.at<uchar>(k, l) >= (2 * maxValA / 255)) 
-								{
-									s = s + img.at<uchar>(k, l);
-									cpt = cpt + 1;
-								}
-							}
-						}
-						img.at<uchar>(i, j) = s / cpt;
-					}
-				}
-			}
-		return img;
-	}
 	else
 		cout << "Wrong image type in interpolation function !" << endl;
 }
@@ -82,8 +54,8 @@ Mat interpolationMean(Mat img0)
 /**
  * \fn Mat interpolationMedian(Mat img0)
  * \brief function to interpolate image with the median value of neighborhood
- * \param img0 - the original image CV_8U or CV_32F
- * \return cv::Mat - the interpolate image
+ * \param img0 - the original image CV_32F
+ * \return Mat - the interpolate image
  */
 Mat interpolationMedian(Mat img0)
 {
@@ -121,32 +93,6 @@ Mat interpolationMedian(Mat img0)
 		}
 		return img;
 	}
-	else if(img_type == 0) // if image type is integer
-	{
-		minMaxLoc( img.col(2), &minValA, &maxValA);
-		for(i=0;i<img.rows-2;i++)
-		{
-			for(j=0;j<img.cols-2;j++)
-			{
-				if(img.at<uchar>(i,j) <= (2*maxValA/255.0))
-				{
-					v.clear();
-					for(k=i;k<i+3;++k)
-					{
-						for(l=j;l<j+3;++l)
-						{
-							if(img.at<uchar>(k,l) >= (2*maxValA/255.0)) 
-								v.push_back(img.at<uchar>(k,l));
-						}
-					}
-					sort(v.begin(), v.end());
-					if(v.size()!=0)
-						img.at<uchar>(i,j) = v.at(v.size()/2);
-				}
-			}
-		}
-		return img;
-	}
 	else
 		cout << "Wrong image type in interpolation function !" << endl;
 }
@@ -154,8 +100,8 @@ Mat interpolationMedian(Mat img0)
 /**
  * \fn Mat interpolationBilinear(Mat img0)
  * \brief function to interpolate image with the bilinear method
- * \param img0 - the original image CV_8U or CV_32F
- * \return cv::Mat - the interpolate image
+ * \param img0 - the original image CV_32F
+ * \return Mat - the interpolate image
  */
 Mat interpolationBilinear(Mat img0)
 {
@@ -200,44 +146,6 @@ Mat interpolationBilinear(Mat img0)
 						w_sum = w_sum + weight[k];
 					}
 					img.at<float>(i,j) = vw_sum / w_sum;
-				}
-			}
-		}
-		return img & circ;
-	}
-	if(img_type == 0) // if image type is integer
-	{
-		minMaxLoc( img.col(2), &minValA, &maxValA, NULL, NULL, Mat() );
-		circ = circ.zeros(img.size(), CV_8U);
-		minMaxLoc( img.col(2), &minValA, &maxValA, NULL, NULL, Mat() );
-		circle(circ, Point(circ.cols  / 2 + 1, circ.rows / 2 + 1), circ.cols / 2, 255, -1);
-		//sweep image
-		for(int i=1;i<img.rows-1;i++)
-		{
-			for(int j=1;j<img.cols-1;j++)
-			{
-				if(img.at<uchar>(i,j) <= 2) // if this test is true : interpolation
-				{
-					neighbors[0] = img.at<uchar>(i-1,j);
-					neighbors[1] = img.at<uchar>(i+1,j);
-					neighbors[2] = img.at<uchar>(i,j-1);
-					neighbors[3] = img.at<uchar>(i,j+1);
-					weight[0] = 1;
-					weight[1] = 1;
-					weight[2] = 1;
-					weight[3] = 1;
-					for(int k=0;k<4;++k)
-					{
-						if(neighbors[k] <= 2)
-							weight[k] = 0;
-					}
-					int vw_sum = 0, w_sum = 0 ;
-					for(int k=0;k<4;++k)
-					{
-						vw_sum = vw_sum + weight[k] * neighbors[k];
-						w_sum = w_sum + weight[k];
-					}
-					img.at<uchar>(i,j) = vw_sum / w_sum;
 				}
 			}
 		}

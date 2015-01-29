@@ -25,7 +25,7 @@ using namespace cv;
  */
 static void help()
 {
-    cout << "\nRebuildind endomicroscopic images.\n"\
+    cout << "\nRebuildind endomicroscopic images V1.0.\n"\
 		"M2 TMR Project 2014-2015\n"\
 		"**********************************\n\n"<< endl;
 }
@@ -42,27 +42,26 @@ int main(int argc, char** argv) {
 //								Images reconstruction with analogic datas
 //****************************************************************************************************************/
 	//Mat data, img, img_reconstr;
-	//
-	////Load text file in a cv::Mat
+	///// Load text file in matrix
 	//timer__("Load text file")
 	//	data = load_textfile2Mat("Papier.txt"); //chargement du fichier contenant les données analogiques
-	////cv::Mat of file to image form (cv::Mat 250*250)
+	///// Matrix of file to an image form (Matrix 250*250)
 	//timer__("File matrix to an image form")
 	//	img = data2img(data);
-	////imshow("Originale image", img);	
-	////Mean Interpolation
+	//imshow("Originale image", img);	
+	///// Mean Interpolation
 	//timer__("Mean Interpolation of image")
 	//	img_reconstr = interpolationMean(img);
-	////imshow("Mean Interpolate", img_reconstr);
-	////Median Interpolation
-	//timer__("Median Interpolation of image")
-	//	img_reconstr = interpolationMedian(img);
+	//imshow("Mean Interpolate", img_reconstr);
+	/////// Median Interpolation
+	////timer__("Median Interpolation of image")
+	////	img_reconstr = interpolationMedian(img);
 	////imshow("Median Interpolate", img_reconstr);
-	////Bilinear interpolation
-	//timer__("Bilinear Interpolation of image")
-	//	img_reconstr = interpolationBilinear(img);
+	/////// Bilinear interpolation
+	////timer__("Bilinear Interpolation of image")
+	////	img_reconstr = interpolationBilinear(img);
 	////imshow("Bilinear Interpolate", img_reconstr);
-	//getchar();
+	//waitKey(0);
 
 //****************************************************************************************************************
 //											Stiching images
@@ -90,8 +89,8 @@ int main(int argc, char** argv) {
 	img0 = interpolationMean(img); // reconstruction of image
     //imshow("Rebuilded",img0);
 	/// Init template
-	Rect rec_tmp(Point(img0.rows/6,img0.cols/6), Point(5*img0.rows/6,5*img0.cols/6)); // Template rectangle
-	template_img = img0(Range(img0.rows/6,5*img0.rows/6),Range(img0.cols/6,5*img0.cols/6)); // Template image
+	Rect rec_tmp(Point(img0.rows/6, img0.cols/6), Point(5*img0.rows/6, 5*img0.cols/6)); // Template rectangle
+	template_img = img0(Range(img0.rows/6, 5*img0.rows/6), Range(img0.cols/6, 5*img0.cols/6)); // Template image
 	///Process on other images
     while (true) {
         if (cap.read(img)) {
@@ -105,11 +104,11 @@ int main(int argc, char** argv) {
 			/// Matthews-Baker inverse compositionnal algorithm
 			timer__("Template Matching")
 				W_estimate = align_image(target_img, template_img, rec_tmp); // inverse compositional algorithm
-			cout << W_estimate << endl;
+			//cout << W_estimate << endl;
 			warpPerspective(target_img, img2, W_estimate.inv(), target_img.size()); // warp images
 			img2.copyTo(img0); // Previous image
-			Rect rec_tmp(Point(img0.rows/6,img0.cols/6), Point(5*img0.rows/6,5*img0.cols/6)); // Template rectangle
-			template_img = img0(Range(img0.rows/6,5*img0.rows/6),Range(img0.cols/6,5*img0.cols/6)); // Template image
+			Rect rec_tmp(Point(img0.rows/6, img0.cols/6), Point(5*img0.rows/6, 5*img0.cols/6)); // Template rectangle
+			template_img = img0(Range(img0.rows/6, 5*img0.rows/6), Range(img0.cols/6, 5*img0.cols/6)); // Template image
             imshow("Rebuilded", target_img);
             //waitKey();
         }
