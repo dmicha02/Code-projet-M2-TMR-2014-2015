@@ -41,26 +41,28 @@ int main(int argc, char** argv) {
 //****************************************************************************************************************
 //								Images reconstruction with analogic datas
 //****************************************************************************************************************/
-//	Mat data, img, img_reconstr;
-//	
-//	//Load text file in a cv::Mat
-//	data = load_textfile2Mat("Papier.txt"); //chargement du fichier contenant les données analogiques
-//	//cv::Mat of file to image form (cv::Mat 250*250)
-//	timer__("File matrix to an image form")
-//		img = data2img(data);
-//	//imshow("Originale image", img);	
-//	//Mean Interpolation
-//	timer__("Mean Interpolation of image")
-//		img_reconstr = interpolationMean(img);
-//	//imshow("Mean Interpolate", img_reconstr);
-//	//Median Interpolation
-//	timer__("Median Interpolation of image")
-//		img_reconstr = interpolationMedian(img);
-//	//imshow("Median Interpolate", img_reconstr);
-//	//Bilinear interpolation
-//	timer__("Bilinear Interpolation of image")
-//		img_reconstr = interpolationBilinear(img);
-//	//imshow("Bilinear Interpolate", img_reconstr);
+	//Mat data, img, img_reconstr;
+	//
+	////Load text file in a cv::Mat
+	//timer__("Load text file")
+	//	data = load_textfile2Mat("Papier.txt"); //chargement du fichier contenant les données analogiques
+	////cv::Mat of file to image form (cv::Mat 250*250)
+	//timer__("File matrix to an image form")
+	//	img = data2img(data);
+	////imshow("Originale image", img);	
+	////Mean Interpolation
+	//timer__("Mean Interpolation of image")
+	//	img_reconstr = interpolationMean(img);
+	////imshow("Mean Interpolate", img_reconstr);
+	////Median Interpolation
+	//timer__("Median Interpolation of image")
+	//	img_reconstr = interpolationMedian(img);
+	////imshow("Median Interpolate", img_reconstr);
+	////Bilinear interpolation
+	//timer__("Bilinear Interpolation of image")
+	//	img_reconstr = interpolationBilinear(img);
+	////imshow("Bilinear Interpolate", img_reconstr);
+	//getchar();
 
 //****************************************************************************************************************
 //											Stiching images

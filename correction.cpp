@@ -7,7 +7,7 @@ using namespace std;
 /**
  * \fn Mat interpolationMean(Mat img0)
  * \brief function to interpolate image with the mean value of neighborhood
- * \param img0 - the original image CV_8U or CV_64F
+ * \param img0 - the original image CV_8U or CV_32F
  * \return cv::Mat - the interpolate image
  */
 Mat interpolationMean(Mat img0)
@@ -17,15 +17,15 @@ Mat interpolationMean(Mat img0)
 	double minValA, maxValA, s;
 	Mat img;
 	img=img0.clone();
-	if(img_type == 6) // if image type is double
+	if(img_type == 5) // if image type is float
 	{
-		minMaxLoc( img.col(2), &minValA, &maxValA, NULL, NULL, Mat() );
+		minMaxLoc( img.col(2), &minValA, &maxValA);
 		// sweep image
 		for(i=0;i<img.rows-2;i++)
 			{
 				for(j=0;j<img.cols-2;j++)
 				{
-					if(img.at<double>(i,j) <= (2*maxValA/255.0)) // criterion of interpolation
+					if(img.at<float>(i,j) <= (2*maxValA/255.0)) // criterion of interpolation
 					{
 						cpt = 1;
 						s = 0;
@@ -34,14 +34,14 @@ Mat interpolationMean(Mat img0)
 						{
 							for(l=j;l<j+3;++l)
 							{
-								if(img.at<double>(k,l) >= (2*maxValA/255.0)) // if this test is true : pixel with valid information
+								if(img.at<float>(k,l) >= (2*maxValA/255.0)) // if this test is true : pixel with valid information
 								{
-									s = s + img.at<double>(k,l);
+									s = s + img.at<float>(k,l);
 									cpt = cpt + 1;
 								}
 							}
 						}
-						img.at<double>(i,j) = s/cpt; // new value of interpolate pixel
+						img.at<float>(i,j) = s/cpt; // new value of interpolate pixel
 					}
 				}
 			}
@@ -49,7 +49,7 @@ Mat interpolationMean(Mat img0)
 	}
 	else if(img_type == 0) // if image type is integer
 	{
-		minMaxLoc( img.col(2), &minValA, &maxValA, NULL, NULL, Mat() );
+		minMaxLoc( img.col(2), &minValA, &maxValA);
 		for(i=0;i<img.rows-2;i++)
 			{
 				for(j=0;j<img.cols-2;j++)
@@ -82,7 +82,7 @@ Mat interpolationMean(Mat img0)
 /**
  * \fn Mat interpolationMedian(Mat img0)
  * \brief function to interpolate image with the median value of neighborhood
- * \param img0 - the original image CV_8U or CV_64F
+ * \param img0 - the original image CV_8U or CV_32F
  * \return cv::Mat - the interpolate image
  */
 Mat interpolationMedian(Mat img0)
@@ -91,17 +91,17 @@ Mat interpolationMedian(Mat img0)
 	double minValA, maxValA;
 	Mat img;
 	img=img0.clone();
-	vector<double> v;
+	vector<float> v;
 	int img_type = img0.type();
-	if(img_type == 6) // if image type is double
+	if(img_type == 5) // if image type is float
 	{
-		minMaxLoc( img.col(2), &minValA, &maxValA, NULL, NULL, Mat() );
+		minMaxLoc( img.col(2), &minValA, &maxValA);
 		//sweep image
 		for(i=0;i<img.rows-2;i++)
 		{
 			for(j=0;j<img.cols-2;j++)
 			{
-				if(img.at<double>(i,j) <= (2*maxValA/255.0)) // if this test is true : interpolation
+				if(img.at<float>(i,j) <= (2*maxValA/255.0)) // if this test is true : interpolation
 				{
 					v.clear();
 					//sweep neighborhood
@@ -109,13 +109,13 @@ Mat interpolationMedian(Mat img0)
 					{
 						for(l=j;l<j+3;++l)
 						{
-							if(img.at<double>(k,l) >= (2*maxValA/255.0))  // if this test is true : pixel with valide information
-								v.push_back(img.at<double>(k,l));
+							if(img.at<float>(k,l) >= (2*maxValA/255.0))  // if this test is true : pixel with valide information
+								v.push_back(img.at<float>(k,l));
 						}
 					}
 					sort(v.begin(), v.end());
 					if(v.size()!=0)
-						img.at<double>(i,j) = v.at(v.size()/2); // value of interpolated pixel
+						img.at<float>(i,j) = v.at(v.size()/2); // value of interpolated pixel
 				}
 			}
 		}
@@ -123,25 +123,25 @@ Mat interpolationMedian(Mat img0)
 	}
 	else if(img_type == 0) // if image type is integer
 	{
-		minMaxLoc( img.col(2), &minValA, &maxValA, NULL, NULL, Mat() );
+		minMaxLoc( img.col(2), &minValA, &maxValA);
 		for(i=0;i<img.rows-2;i++)
 		{
 			for(j=0;j<img.cols-2;j++)
 			{
-				if(img.at<double>(i,j) <= (2*maxValA/255.0))
+				if(img.at<uchar>(i,j) <= (2*maxValA/255.0))
 				{
 					v.clear();
 					for(k=i;k<i+3;++k)
 					{
 						for(l=j;l<j+3;++l)
 						{
-							if(img.at<double>(k,l) >= (2*maxValA/255.0)) 
-								v.push_back(img.at<double>(k,l));
+							if(img.at<uchar>(k,l) >= (2*maxValA/255.0)) 
+								v.push_back(img.at<uchar>(k,l));
 						}
 					}
 					sort(v.begin(), v.end());
 					if(v.size()!=0)
-						img.at<double>(i,j) = v.at(v.size()/2);
+						img.at<uchar>(i,j) = v.at(v.size()/2);
 				}
 			}
 		}
@@ -154,53 +154,52 @@ Mat interpolationMedian(Mat img0)
 /**
  * \fn Mat interpolationBilinear(Mat img0)
  * \brief function to interpolate image with the bilinear method
- * \param img0 - the original image CV_8U or CV_64F
+ * \param img0 - the original image CV_8U or CV_32F
  * \return cv::Mat - the interpolate image
  */
 Mat interpolationBilinear(Mat img0)
 {
-	int i, j, k;
 	double minValA, maxValA;
 	Mat img, circ;
-	img=img0.clone();
-	Vec4d neighbors, weight;
+	img = img0.clone();
+	Vec4f neighbors, weight;
 	int img_type = img0.type();
-	if(img_type == 6) // if image type is double
+	if(img_type == 5) // if image type is float
 	{
-		minMaxLoc( img.col(2), &minValA, &maxValA, NULL, NULL, Mat() );
-		circ = circ.zeros(img.size(), CV_64F);
-		minMaxLoc( img.col(2), &minValA, &maxValA, NULL, NULL, Mat() );
+		minMaxLoc( img.col(2), &minValA, &maxValA);
+		circ = circ.zeros(img.size(), CV_32F);
+		minMaxLoc( img.col(2), &minValA, &maxValA);
 		circle(circ, Point(circ.cols  / 2 + 1, circ.rows / 2 + 1), circ.cols / 2, 1.5, -1);
 		//sweep image
-		for(i=1;i<img.rows-1;i++)
+		for(int i=1;i<img.rows-1;i++)
 		{
-			for(j=1;j<img.cols-1;j++)
+			for(int j=1;j<img.cols-1;j++)
 			{
-				if(img.at<double>(i,j) <= (2*maxValA/255.0)) // if this test is true : interpolation
+				if(img.at<float>(i,j) <= (2*maxValA/255.0)) // if this test is true : interpolation
 				{
 					//Neighborhood of pixel to interpolate
-					neighbors[0] = img.at<double>(i-1,j);
-					neighbors[1] = img.at<double>(i+1,j);
-					neighbors[2] = img.at<double>(i,j-1);
-					neighbors[3] = img.at<double>(i,j+1);
+					neighbors[0] = img.at<float>(i-1,j);
+					neighbors[1] = img.at<float>(i+1,j);
+					neighbors[2] = img.at<float>(i,j-1);
+					neighbors[3] = img.at<float>(i,j+1);
 					//weight of each pixel in neighborhood
 					weight[0] = 1;
 					weight[1] = 1;
 					weight[2] = 1;
 					weight[3] = 1;
-					for(k=0;k<4;++k)
+					for(int k=0;k<4;++k)
 					{
 						if(neighbors[k] <= (2*maxValA/255.0))
 							weight[k] = 0;
 					}
-					double vw_sum = 0, w_sum = 0 ;
+					float vw_sum = 0, w_sum = 0 ;
 					//Calcul of new value of pixel to interpolate
-					for(k=0;k<4;++k)
+					for(int k=0;k<4;++k)
 					{
 						vw_sum = vw_sum + weight[k] * neighbors[k];
 						w_sum = w_sum + weight[k];
 					}
-					img.at<double>(i,j) = vw_sum / w_sum;
+					img.at<float>(i,j) = vw_sum / w_sum;
 				}
 			}
 		}
@@ -213,9 +212,9 @@ Mat interpolationBilinear(Mat img0)
 		minMaxLoc( img.col(2), &minValA, &maxValA, NULL, NULL, Mat() );
 		circle(circ, Point(circ.cols  / 2 + 1, circ.rows / 2 + 1), circ.cols / 2, 255, -1);
 		//sweep image
-		for(i=1;i<img.rows-1;i++)
+		for(int i=1;i<img.rows-1;i++)
 		{
-			for(j=1;j<img.cols-1;j++)
+			for(int j=1;j<img.cols-1;j++)
 			{
 				if(img.at<uchar>(i,j) <= 2) // if this test is true : interpolation
 				{
@@ -227,13 +226,13 @@ Mat interpolationBilinear(Mat img0)
 					weight[1] = 1;
 					weight[2] = 1;
 					weight[3] = 1;
-					for(k=0;k<4;++k)
+					for(int k=0;k<4;++k)
 					{
 						if(neighbors[k] <= 2)
 							weight[k] = 0;
 					}
 					int vw_sum = 0, w_sum = 0 ;
-					for(k=0;k<4;++k)
+					for(int k=0;k<4;++k)
 					{
 						vw_sum = vw_sum + weight[k] * neighbors[k];
 						w_sum = w_sum + weight[k];

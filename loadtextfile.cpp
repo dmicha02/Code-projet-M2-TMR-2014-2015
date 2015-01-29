@@ -9,16 +9,18 @@
  *                 pour ne pas manipuler un fichier.
  */
 #include "loadtextfile.h"
+using namespace std;
+using namespace cv;
 
-cv::Mat load_textfile2Mat(std::string filename){
+Mat load_textfile2Mat(string filename){
 	int count=1, erreur_line=1;
-	cv::Mat data(125000, 3, CV_64F);
-	std::ifstream file(filename, std::ios::in);
-	std::string line, data_x, data_y, data_a;
+	Mat data(125000, 3, CV_32F);
+	ifstream file(filename, ios::in);
+	string line, data_x, data_y, data_a;
 	file >> data_x >> data_y >> data_a;
-	data.at<double>(0,0) = atof(data_x.c_str());
-	data.at<double>(0,1) = atof(data_y.c_str());
-	data.at<double>(0,2) = atof(data_a.c_str());
+	data.at<float>(0,0) = atof(data_x.c_str());
+	data.at<float>(0,1) = atof(data_y.c_str());
+	data.at<float>(0,2) = atof(data_a.c_str());
 	while ( getline( file, line ) ) 
 	{ 
 
@@ -28,13 +30,13 @@ cv::Mat load_textfile2Mat(std::string filename){
 			erreur_line = count;
 			break;
 		}
-		data.at<double>(count,0) = atof(data_x.c_str());
-		data.at<double>(count,1) = atof(data_y.c_str());
-		data.at<double>(count,2) = atof(data_a.c_str());
+		data.at<float>(count,0) = atof(data_x.c_str());
+		data.at<float>(count,1) = atof(data_y.c_str());
+		data.at<float>(count,2) = atof(data_a.c_str());
 		count++;
 	}
 	file.close();
-	cv::Mat M(erreur_line, 3, CV_64F);
-	data(cv::Range(0, erreur_line), cv::Range(0, 3)).copyTo(M);
+	Mat M(erreur_line, 3, CV_32F);
+	data(Range(0, erreur_line), Range(0, 3)).copyTo(M);
 	return M;
 }
