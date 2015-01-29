@@ -15,9 +15,11 @@ add_executable(Matching
 	Matching/ECC.cpp
 	Matching/EstimateRigidT.cpp
 	Matching/TemplateMatching.cpp
+	Matching/stitching.cpp
 	Matching/ECC.h
 	Matching/EstimateRigidT.h
 	Matching/TemplateMatching.h
+	Matching/stitching.h
 	correction.cpp
 	correction.h
 	io.cpp
