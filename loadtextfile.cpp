@@ -12,7 +12,7 @@ Mat load_textfile2Mat(string filename)
 {
 	int count = 1, erreur_line = 1;
 	Mat data(125000, 3, CV_32F);
-	ifstream file(filename, ios::in);
+	ifstream file(filename, ios::in, ios::binary);
 	string line, data_x, data_y, data_a;
 	file >> data_x >> data_y >> data_a;
 	data.at<float>(0,0) = atof(data_x.c_str());
