@@ -1,5 +1,5 @@
 ﻿#include <cstdlib>
-#include <iostream>
+#include <fstream>
 #include <string>
 #include <opencv2/opencv.hpp>
 #include <timer.h>
@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
 	///// Load text file in matrix
 	//timer__("Load text file")
 	//	data = load_textfile2Mat("Papier.txt"); //chargement du fichier contenant les données analogiques
-	///// Matrix of file to an image form (Matrix 250*250)
+	///// Matrix of file to an image form
 	//timer__("File matrix to an image form")
 	//	img = data2img(data);
 	//imshow("Originale image", img);	
@@ -53,14 +53,14 @@ int main(int argc, char** argv) {
 	//timer__("Mean Interpolation of image")
 	//	img_reconstr = interpolationMean(img);
 	//imshow("Mean Interpolate", img_reconstr);
-	/////// Median Interpolation
-	////timer__("Median Interpolation of image")
-	////	img_reconstr = interpolationMedian(img);
-	////imshow("Median Interpolate", img_reconstr);
-	/////// Bilinear interpolation
-	////timer__("Bilinear Interpolation of image")
-	////	img_reconstr = interpolationBilinear(img);
-	////imshow("Bilinear Interpolate", img_reconstr);
+	///// Median Interpolation
+	//timer__("Median Interpolation of image")
+	//	img_reconstr = interpolationMedian(img);
+	//imshow("Median Interpolate", img_reconstr);
+	///// Bilinear interpolation
+	//timer__("Bilinear Interpolation of image")
+	//	img_reconstr = interpolationBilinear(img);
+	//imshow("Bilinear Interpolate", img_reconstr);
 	//waitKey(0);
 
 //****************************************************************************************************************
@@ -72,13 +72,14 @@ int main(int argc, char** argv) {
     } else {
         path = string(argv[1]);
     }
+
 	/// Initialisation
 	Mat img0, target_img, img, img2, template_img, W_estimate;
     /// Capture of images
     VideoCapture cap(path + "%03d.jpg");
     cap.set(CAP_PROP_FPS, 8);
-    namedWindow("Camera", WINDOW_AUTOSIZE);
-	namedWindow("Rebuilded", WINDOW_AUTOSIZE);
+    //namedWindow("Camera", WINDOW_AUTOSIZE);
+	//namedWindow("Rebuilded", WINDOW_AUTOSIZE);
 	//namedWindow("Panorama", WINDOW_AUTOSIZE);
     /// Process on first image
 	while (!cap.read(img));
@@ -93,14 +94,16 @@ int main(int argc, char** argv) {
 	template_img = img0(Range(img0.rows/6, 5*img0.rows/6), Range(img0.cols/6, 5*img0.cols/6)); // Template image
 	///Process on other images
     while (true) {
-        if (cap.read(img)) {
+		
+        if (cap.read(img)){
             img.convertTo(img, CV_32F); // Convert in float32
 			cvtColor(img, img, COLOR_RGB2GRAY); // RGB -> Grayscale
 			target_img = img / 255.0; // Value between 0 and 1
-			imshow("Camera", img/255);
+			//imshow("Camera", img/255); // display images with artefacts
 			/// Image reconstruction
             timer__("Correction")
                 target_img = interpolationMean(target_img); // interpolation with mean value in neighborhood
+			//imshow("Rebuilded", target_img); 
 			/// Matthews-Baker inverse compositionnal algorithm
 			timer__("Template Matching")
 				W_estimate = align_image(target_img, template_img, rec_tmp); // inverse compositional algorithm
@@ -109,8 +112,7 @@ int main(int argc, char** argv) {
 			img2.copyTo(img0); // Previous image
 			Rect rec_tmp(Point(img0.rows/6, img0.cols/6), Point(5*img0.rows/6, 5*img0.cols/6)); // Template rectangle
 			template_img = img0(Range(img0.rows/6, 5*img0.rows/6), Range(img0.cols/6, 5*img0.cols/6)); // Template image
-            imshow("Rebuilded", target_img);
-            //waitKey();
+            // waitKey();
         }
         if (waitKey(30) >= 0) break;
     }

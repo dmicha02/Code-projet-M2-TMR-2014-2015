@@ -25,7 +25,7 @@ Mat interpolationMean(Mat img0)
 			{
 				for(j=0;j<img.cols-2;j++)
 				{
-					if(img.at<float>(i,j) <= (2*maxValA/255.0)) // criterion of interpolation
+					if(img.at<float>(i,j) <= (10*maxValA/255.0)) // criterion of interpolation
 					{
 						cpt = 1;
 						s = 0;
@@ -34,7 +34,7 @@ Mat interpolationMean(Mat img0)
 						{
 							for(l=j;l<j+3;++l)
 							{
-								if(img.at<float>(k,l) >= (2*maxValA/255.0)) // if this test is true : pixel with valid information
+								if(img.at<float>(k,l) >= (10*maxValA/255.0)) // if this test is true : pixel with valid information
 								{
 									s = s + img.at<float>(k,l);
 									cpt = cpt + 1;
