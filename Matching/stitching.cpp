@@ -51,7 +51,7 @@ Mat get_dwarp_estimate(Vec6f dp)
 Mat align_image(Mat target_img, Mat template_img, Rect rect)
 {
 	const int MAX_ITER = 200;
-	const float EPS = 1e-3f;
+	const float EPS = 1e-4f;
 	/// Initialisation
 	int nbparam = 6;
 	Mat warp_estimate, dwarp_estimate, idwarp_estimate;
@@ -154,8 +154,49 @@ Mat align_image(Mat target_img, Mat template_img, Rect rect)
 		if (max_err <= EPS)
             break;
 	}
-	cout << endl;
+	//cout << endl;
 	warp_estimate.at<float>(0,2) -= rect.x;
 	warp_estimate.at<float>(1,2) -= rect.y;
 	return warp_estimate;
+}
+
+/**
+ * \fn Mat Merge_image(Mat img1, Mat img2)
+ * \brief function of merging two images
+ * \param img1 - the first image to merge
+ * \param img2 - the second image to merge
+ * \return cv::Mat - the result image
+ */
+Mat merge_image(Mat img1, Mat img2, Mat warp)
+{
+	/// Create the result matrix of merging
+	Mat merge_img, img_warped, img_org, img_org2;
+	/// Merge the images img1 and img2
+	float tx, ty, rx, ry, sx, sy;
+	tx = warp.at<float>(0,2);
+	ty = warp.at<float>(1,2);
+	rx = warp.at<float>(0,1);
+	ry = warp.at<float>(1,0);
+	sx = warp.at<float>(0,0);
+	sy = warp.at<float>(1,1);
+	img_org = img_org.zeros(2*img1.rows, 2*img1.cols, CV_32FC1);
+	img_org2 = img_org.zeros(2*img1.rows, 2*img1.cols, CV_32FC1);
+	merge_img = merge_img.zeros(img_org.rows, img_org.cols, CV_32FC1);
+	img_warped = img_warped.zeros(img_org.rows, img_org.cols, CV_32FC1);
+	for (int i=img_org.rows/4;i<3*img_org.rows/4;i++)
+		for(int j=img_org.cols/4;j<3*img_org.cols/4;j++)
+		{
+			img_org.at<float>(i,j)=img1.at<float>(i-img_org.rows/4, j-img_org.cols/4);
+			img_org2.at<float>(i,j)=img2.at<float>(i-img_org.rows/4, j-img_org.cols/4);
+		}
+	warpPerspective(img_org2, img_warped, warp, img_warped.size());
+	for (int i=0;i<img_org.rows;i++)
+		for(int j=0;j<img_org.cols;j++)
+		{
+			if(img_org.at<float>(i,j)==0)
+				merge_img.at<float>(i,j) = img_warped.at<float>(i,j);
+			else
+				merge_img.at<float>(i,j) = img_org.at<float>(i,j);
+		}
+	return merge_img;
 }
