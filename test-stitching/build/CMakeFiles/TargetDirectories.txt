@@ -1,3 +1,0 @@
-C:/Users/Dorian/Desktop/code_projet/test-lib/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/Dorian/Desktop/code_projet/test-lib/build/CMakeFiles/ZERO_CHECK.dir
-C:/Users/Dorian/Desktop/code_projet/test-lib/build/CMakeFiles/testLib.dir
