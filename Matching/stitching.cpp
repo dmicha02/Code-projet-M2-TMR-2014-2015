@@ -167,19 +167,19 @@ Mat align_image(Mat target_img, Mat template_img, Rect rect)
  * \param img2 - the second image to merge
  * \return cv::Mat - the result image
  */
-Mat merge_image(Mat img1, Mat img2, Mat warp)
+Mat merge_image(Mat img1, Mat img2, Mat warp, Rect rect)
 {
 	/// Create the result matrix of merging
-	Mat merge_img, img_warped, img_org, img_org2;
+	Mat merge_img, img_warped, Mask, img_org2;
 	/// Merge the images img1 and img2
-	float tx, ty, rx, ry, sx, sy;
-	tx = warp.at<float>(0,2);
-	ty = warp.at<float>(1,2);
-	rx = warp.at<float>(0,1);
-	ry = warp.at<float>(1,0);
-	sx = warp.at<float>(0,0);
-	sy = warp.at<float>(1,1);
-	img_org = img_org.zeros(2*img1.rows, 2*img1.cols, CV_32FC1);
+	//float tx, ty, rx, ry, sx, sy;
+	//tx = warp.at<float>(0,2);
+	//ty = warp.at<float>(1,2);
+	//rx = warp.at<float>(0,1);
+	//ry = warp.at<float>(1,0);
+	//sx = warp.at<float>(0,0);
+	//sy = warp.at<float>(1,1);
+	/*img_org = img_org.zeros(2*img1.rows, 2*img1.cols, CV_32FC1);
 	img_org2 = img_org.zeros(2*img1.rows, 2*img1.cols, CV_32FC1);
 	merge_img = merge_img.zeros(img_org.rows, img_org.cols, CV_32FC1);
 	img_warped = img_warped.zeros(img_org.rows, img_org.cols, CV_32FC1);
@@ -197,6 +197,21 @@ Mat merge_image(Mat img1, Mat img2, Mat warp)
 				merge_img.at<float>(i,j) = img_warped.at<float>(i,j);
 			else
 				merge_img.at<float>(i,j) = img_org.at<float>(i,j);
+		}*/
+	img_org2 = img_org2.zeros(img1.rows, img1.cols, CV_32FC1);
+	merge_img = merge_img.zeros(img1.rows, img1.cols, CV_32FC1);
+	img_warped = img_warped.zeros(img1.rows, img1.cols, CV_32FC1);
+	for (int i=rect.tl().y;i<rect.br().y;i++)
+			for(int j=rect.tl().x;j<rect.br().x;j++)
+				img_org2.at<float>(i,j)=img2.at<float>(i-rect.tl().y, j-rect.tl().x);
+	warpPerspective(img_org2, img_warped, warp, img_warped.size());
+	for (int i=0;i<img1.rows;i++)
+		for(int j=0;j<img1.cols;j++)
+		{
+			if(img1.at<float>(i,j)==0)
+				merge_img.at<float>(i,j) = img_warped.at<float>(i,j);
+			else
+				merge_img.at<float>(i,j) = img1.at<float>(i,j);
 		}
 	return merge_img;
 }

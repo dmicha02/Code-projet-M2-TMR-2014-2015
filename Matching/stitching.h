@@ -15,6 +15,6 @@ using namespace cv;
 Mat get_Jacobian(int, int);
 Mat get_dwarp_estimate(Vec6f);
 Mat align_image(Mat, Mat, Rect);
-Mat merge_image(Mat, Mat, Mat);
+Mat merge_image(Mat, Mat, Mat, Rect);
 
 #endif /* STITCHING_H */

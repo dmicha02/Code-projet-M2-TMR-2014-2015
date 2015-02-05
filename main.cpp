@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
 	Mat img, img0, img_merge, target_img, warp(3,3,CV_32F);
 	warp.at<float>(0,0) = 1.0;
 	warp.at<float>(0,1) = 0.0;
-	warp.at<float>(0,2) = 2;
+	warp.at<float>(0,2) = 2.0;
 	warp.at<float>(1,0) = 0.0;
 	warp.at<float>(1,1) = 1.0;
 	warp.at<float>(1,2) = 2.0;
@@ -151,9 +151,14 @@ int main(int argc, char** argv) {
 	img0 = imread(path + ss.str() + ".jpg", 0);
 	img0.convertTo(img0,CV_32F);
 	img0=img0/255.0;
-	img_merge = img0;
-    /// Capture of images
+	///Init the image panorama
+	img_merge = img_merge.zeros(700,1400,CV_32FC1);
+	for (int i=img_merge.rows/4;i<img_merge.rows/4+img0.rows;i++)
+		for(int j=img_merge.cols/4;j<img_merge.cols/4+img0.cols;j++)
+			img_merge.at<float>(i,j)=img0.at<float>(i-img_merge.rows/4, j-img_merge.cols/4);
+	Rect rec_pos(Point(img_merge.cols/4, img_merge.rows/4), Point(img_merge.cols/4 + img0.cols ,img_merge.rows/4 + img0.rows));
 	while(true){
+		/// Capture of images
 		num+=1;
 		stringstream ss;
 		ss << num;
@@ -162,9 +167,24 @@ int main(int argc, char** argv) {
 		img = img/255.0;
 		if(img.rows == 0)
 			break;
-		img_merge = merge_image(img0, img, warp);
-		imshow("merge",img_merge);
-		img.copyTo(img0);
+		/// Merge images
+		img_merge = merge_image(img_merge, img, warp, rec_pos);
+		/// Display panorama
+		imshow("panorama",img_merge);
+		/// Update rec_pos
+		Vec3f v_pos_tl, v_pos_br;
+		v_pos_tl[0] = rec_pos.tl().x;
+		v_pos_tl[1] = rec_pos.tl().y;
+		v_pos_tl[2] = 1;
+		v_pos_br[0] = rec_pos.br().x;
+		v_pos_br[1] = rec_pos.br().y;
+		v_pos_br[2] = 1;
+		
+		//cout<< v_pos_br <<endl;
+		//warp points of rectangle
+		/* */
+		//cout<< v_pos_br <<endl;
+		rec_pos = Rect(Point(v_pos_tl[1], v_pos_tl[0]), Point(v_pos_br[1] , v_pos_br[0]));
 		waitKey(0);
 	}
     return EXIT_SUCCESS;
