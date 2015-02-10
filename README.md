@@ -5,6 +5,7 @@ ____________________________
  - Dépendances : OpenCV VERSION 3.0 BETA
  - Compilateur : CL (environnement Visual Studio 2010 x32)
  - OS : Windows 8.1
+ 
 ____________________________
 ### Procédures d'installation / d'utilisation :
 
