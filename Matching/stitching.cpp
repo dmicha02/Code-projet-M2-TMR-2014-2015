@@ -164,11 +164,36 @@ Mat align_image(Mat target_img, Mat template_img, Rect rect)
  * \fn Mat merge_image(Mat img1, Mat img2)
  * \brief function to merge two images
  * \param img1, img2 - the two images to merge
- * \return Mat - the result image
+ * \return Mat - the result image of merging
  */
 Mat merge_image(Mat img1, Mat img2)
 {
-	Mat result_img;
+	Mat result_img(img1.rows,img1.cols,CV_32FC1);
+	double minVal1, minVal2, maxVal1, maxVal2;
+	minMaxLoc(img1, &minVal1, &maxVal1);
+	minMaxLoc(img2, &minVal2, &maxVal2);
+	for (int i=0;i<img1.rows;i++)
+	{
+		for (int j=0;j<img1.cols;j++)
+		{
+			if (img1.at<float>(i,j) <= (10*maxVal1/255.0) || img2.at<float>(i,j) <= (10*maxVal2/255.0))
+			{
+				result_img.at<float>(i,j)=0;
+			}
+			else if(img1.at<float>(i,j) <= (10*maxVal1/255.0) || img2.at<float>(i,j) > (10*maxVal2/255.0))
+			{
+				result_img.at<float>(i,j) = img2.at<float>(i,j);
+			}
+			else if(img2.at<float>(i,j) <= (10*maxVal2/255.0) || img1.at<float>(i,j) > (10*maxVal1/255.0))
+			{
+				result_img.at<float>(i,j) = img1.at<float>(i,j);
+			}
+			else
+			{
+				result_img.at<float>(i,j) = (img1.at<float>(i,j) + img2.at<float>(i,j)) / 2.0;
+			}
+		}
+	}
 	return result_img;
 }
 
