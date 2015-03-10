@@ -1,0 +1,6 @@
+*.exe
+build
+nbproject/private
+Thumbs.db
+out.bmp
+out.png
